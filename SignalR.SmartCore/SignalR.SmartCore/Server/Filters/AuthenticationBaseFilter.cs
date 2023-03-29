@@ -2,11 +2,6 @@
 using Microsoft.AspNetCore.SignalR;
 using SignalR.SmartCore.Server.Filters.Authenticators;
 using SignalR.SmartCore.Server.Providers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SignalR.SmartCore.Server.Filters
 {
@@ -27,6 +22,14 @@ namespace SignalR.SmartCore.Server.Filters
             this.SmartHubAuthenticator = smartHubAuthenticator;
         }
 
+        /// <summary>
+        /// Authenticate when the connection is established.
+        /// return brief error message when authenticate failed.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="next"></param>
+        /// <returns></returns>
+        /// <exception cref="HubException"></exception>
         public async Task OnConnectedAsync(HubLifetimeContext context,
                                            Func<HubLifetimeContext, Task> next)
         {
@@ -34,7 +37,11 @@ namespace SignalR.SmartCore.Server.Filters
             HttpContext httpContext = context.Context.GetHttpContext();
 #pragma warning restore CS8600 
 
-            if (httpContext == null || !SmartHubAuthenticator.OnConnected(httpContext)) throw new HubException("Authorization failed.");
+            if (httpContext == null || !SmartHubAuthenticator.OnConnected(httpContext))
+            {
+                await context.Hub.Clients.Caller.SendError("Authentication failed");
+                throw new HubException();
+            }
 
             await next(context);
         }

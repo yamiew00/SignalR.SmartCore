@@ -22,7 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IServiceCollection AddSmartSignalR(this IServiceCollection services, Action<SmartHubOptions> configure = default)
         {
-            var hubTypes = SmartGlobal.SmartHubConcreteTypes;
+            var hubTypes = ServerGlobal.SmartHubConcreteTypes;
 
             //configure
             SmartHubOptions smartHubOptions = new SmartHubOptions();
@@ -33,6 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
             var signalRBuilder = services.AddSignalR(options =>
             {
                 options.AddFilter<SmartManagerFilter>();
+                options.EnableDetailedErrors = true;
             });
 
             //configure the SmartHubOptions
@@ -52,14 +53,14 @@ namespace Microsoft.Extensions.DependencyInjection
             
             //add manager
             services.AddSingleton(serviceType: typeof(ISmartHubManager),
-                                  implementationInstance: new SmartHubManager(SmartGlobal.SmartHubConcreteTypes));
+                                  implementationInstance: new SmartHubManager(ServerGlobal.SmartHubConcreteTypes));
 
             //add non-generic hubProvider
             services.AddSingleton(serviceType: typeof(ISmartHubProvider),
                                   implementationType: typeof(SmartHubProvider));
 
             //add generic hubProvider
-            foreach (var hubType in SmartGlobal.SmartHubConcreteTypes)
+            foreach (var hubType in ServerGlobal.SmartHubConcreteTypes)
             {
                 services.AddSingleton(serviceType: typeof(ISmartHubProvider<>).MakeGenericType(hubType),
                                       implementationType: typeof(SmartHubProvider<>).MakeGenericType(hubType));

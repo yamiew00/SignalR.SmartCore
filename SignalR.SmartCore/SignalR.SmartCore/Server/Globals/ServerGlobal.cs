@@ -5,7 +5,7 @@ namespace SignalR.SmartCore.Server
     /// <summary>
     /// Global parameters
     /// </summary>
-    internal static class SmartGlobal
+    internal static class ServerGlobal
     {
         private static IEnumerable<Type>? _smartHubConcreteTypes;
 

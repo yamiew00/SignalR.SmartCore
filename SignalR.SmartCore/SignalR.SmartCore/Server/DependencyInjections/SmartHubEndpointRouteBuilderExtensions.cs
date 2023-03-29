@@ -12,7 +12,7 @@ namespace Microsoft.AspNetCore.Builder
 
             //map all smarthub
             var mapHubMethod = typeof(HubEndpointRouteBuilderExtensions).GetMethods().Where(m => m.Name == "MapHub" && m.IsGenericMethod).First();
-            foreach (var smartHubType in SmartGlobal.SmartHubConcreteTypes)
+            foreach (var smartHubType in ServerGlobal.SmartHubConcreteTypes)
             {
                 //Dynamically generate and execute MapHub<T> methods
                 var routeAttribute = smartHubType.GetCustomAttribute<HubRouteAttribute>();

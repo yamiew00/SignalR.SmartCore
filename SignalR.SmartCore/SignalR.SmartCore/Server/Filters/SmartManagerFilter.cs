@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using SignalR.SmartCore.Server.Managers;
 
 namespace SignalR.SmartCore.Server.Filters
@@ -25,8 +26,18 @@ namespace SignalR.SmartCore.Server.Filters
         public async Task OnConnectedAsync(HubLifetimeContext context,
                                            Func<HubLifetimeContext, Task> next)
         {
-            await next(context);
-            SmartHubManager.AddClient(context.Hub);
+            try
+            {
+                await next(context);
+                SmartHubManager.AddClient(context.Hub);
+            }
+            catch(HubException ex) 
+            {
+#pragma warning disable CS8600
+                HttpContext httpContext = context.Context.GetHttpContext();
+                httpContext?.Abort();
+#pragma warning restore CS8600
+            }
         }
 
         public async Task OnDisconnectedAsync(HubLifetimeContext context,
