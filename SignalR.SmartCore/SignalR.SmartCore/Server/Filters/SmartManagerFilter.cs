@@ -3,6 +3,10 @@ using SignalR.SmartCore.Server.Managers;
 
 namespace SignalR.SmartCore.Server.Filters
 {
+    /// <summary>
+    /// This filter is responsible for managing SmartHub<T>. 
+    /// It adds the connection to the internal list when the connection is successfully established and removes it when disconnected.
+    /// </summary>
     internal class SmartManagerFilter : IHubFilter
     {
         private readonly ISmartHubManager SmartHubManager;

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-
 namespace SignalR.SmartCore.Server
 {
     /// <summary>
@@ -10,6 +9,9 @@ namespace SignalR.SmartCore.Server
     {
         object ICloneable.Clone() => MemberwiseClone() as CacheHub<T>;
 
+        /// <summary>
+        /// force a client to be disconnected from server
+        /// </summary>
         public void ForceDisconnect()
         {
             this.Context.Abort();

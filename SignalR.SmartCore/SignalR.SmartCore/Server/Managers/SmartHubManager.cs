@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 namespace SignalR.SmartCore.Server.Managers
 {
     /// <summary>
-    /// The SmartHubManager class manages SmartHub instances, adding them on user connection
+    /// The SmartHubManager class manages SmartHub instances, adding them on user connect successfully
     /// and removing them on user disconnection. It is designed as a singleton for the application.
     /// </summary>
     internal class SmartHubManager : ISmartHubManager

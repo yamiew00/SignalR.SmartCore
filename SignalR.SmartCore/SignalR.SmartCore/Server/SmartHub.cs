@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
-
-namespace SignalR.SmartCore.Server
+﻿namespace SignalR.SmartCore.Server
 {
     /// <summary>
     /// A base class for a strongly typed SmartHub, which is a Hub.
