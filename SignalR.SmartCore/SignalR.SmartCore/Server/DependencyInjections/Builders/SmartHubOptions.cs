@@ -1,27 +1,20 @@
-﻿using SignalR.SmartCore.Server.Filters.Authenticators;
+﻿using SignalR.SmartCore.Server.Filters.SmartHubFilters;
 
 namespace SignalR.SmartCore.Server.DependencyInjections.Builders
 {
-    /// <summary>
-    /// Options used to configure SmartHub instances.
-    /// </summary>
     public class SmartHubOptions
     {
-        private Type? _authenticatorType;
+        internal List<Type> FilterTypes = new List<Type>();
 
-        internal Type AuthenticatorType => _authenticatorType ?? typeof(DefaultAuthenticator);
-
-        public void AddAuthentication<T>() where T : ISmartHubAuthenticator
+        public void AddFilter<TFilter>() where TFilter: ISmartHubFilterBase
         {
-            AddAuthentication(typeof(T));
+            AddFilter(typeof(TFilter));
         }
 
-        public void AddAuthentication(Type authenticatorType)
+        public void AddFilter(Type filterType)
         {
-            //check type: must be an implmentation of ISmartHubAuthenticator
-            if (!typeof(ISmartHubAuthenticator).IsAssignableFrom(authenticatorType)) throw new Exception("authenticatorType must be an implementation of ISmartHubAuthenticator");
-
-            _authenticatorType = authenticatorType;
+            if (!typeof(ISmartHubFilterBase).IsAssignableFrom(filterType)) throw new Exception("filterType must be an implementation of ISmartHubFilterBase");
+            FilterTypes.Add(filterType);
         }
     }
 }
