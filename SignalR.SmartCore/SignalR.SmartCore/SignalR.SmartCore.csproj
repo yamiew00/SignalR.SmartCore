@@ -4,6 +4,12 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Version>6.0.0</Version>
+    <Authors>yamiew</Authors>
+    <Company />
+    <Product />
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>SignalR.SmartCore</Title>
   </PropertyGroup>
 
 	<ItemGroup>
