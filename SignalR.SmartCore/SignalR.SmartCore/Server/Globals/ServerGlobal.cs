@@ -14,9 +14,9 @@ namespace SignalR.SmartCore.Server
             get
             {
                 _smartHubConcreteTypes ??= AppDomain.CurrentDomain
-                                                      .GetAssemblies()
-                                                      .SelectMany(s => s.GetTypes())
-                                                      .Where(type => type.IsConcreteAndSubClassOfSmartHub());
+                                                    .GetAssemblies()
+                                                    .SelectMany(s => s.GetTypes())
+                                                    .Where(type => type.IsConcreteAndSubClassOfSmartHub());
                 return _smartHubConcreteTypes;
             }
         }
