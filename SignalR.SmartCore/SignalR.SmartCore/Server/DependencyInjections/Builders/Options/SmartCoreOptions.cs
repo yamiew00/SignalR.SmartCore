@@ -1,6 +1,6 @@
 ﻿using SignalR.SmartCore.Server.Filters.Authenticators;
 
-namespace SignalR.SmartCore.Server.DependencyInjections.Builders
+namespace SignalR.SmartCore.Server.DependencyInjections.Builders.Options
 {
     /// <summary>
     /// Options used to configure SmartHub instances.

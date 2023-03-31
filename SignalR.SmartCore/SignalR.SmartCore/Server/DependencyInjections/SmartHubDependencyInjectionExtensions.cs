@@ -2,7 +2,8 @@
 using SignalR.SmartCore.Server;
 using SignalR.SmartCore.Server.Attributes;
 using SignalR.SmartCore.Server.DependencyInjections;
-using SignalR.SmartCore.Server.DependencyInjections.Builders;
+using SignalR.SmartCore.Server.DependencyInjections.Builders.Lifecycles;
+using SignalR.SmartCore.Server.DependencyInjections.Builders.Options;
 using SignalR.SmartCore.Server.Filters;
 using SignalR.SmartCore.Server.Filters.Authenticators;
 using SignalR.SmartCore.Server.Filters.SmartHubFilters;
@@ -40,8 +41,8 @@ namespace Microsoft.Extensions.DependencyInjection
             if (authenticatorType != null)
             {
                 // Register ISmartHubAuthenticator as authenticatorType. If authenticatorType is not specified, the default type will be DefaultAuthenticator.
-                services.AddScoped(serviceType: typeof(ISmartHubAuthenticator),
-                                   implementationType: authenticatorType);
+                services.AddAsScoped(serviceType: typeof(ISmartHubAuthenticator),
+                                     implementationType: authenticatorType);
             }
 
             /// For every Hubtype : SmartHub<IHubService>, it runs :
@@ -79,7 +80,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     
                     foreach (var smartHubFilterBaseType in smartHubOption.FilterTypes)
                     {
-                        services.AddScoped(smartHubFilterBaseType);
+                        services.AddAsScoped(smartHubFilterBaseType);
 
                         // Construct a delegate for configuring HubOptions within AddHubOptions<THub>
                         void configureCustomHubOptions(HubOptions options)
@@ -108,18 +109,18 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             //add manager
-            services.AddSingleton(serviceType: typeof(ISmartHubManager),
+            services.AddAsSingleton(serviceType: typeof(ISmartHubManager),
                                   implementationInstance: new SmartHubManager(ServerGlobal.SmartHubConcreteTypes));
 
             //add non-generic hubProvider
-            services.AddSingleton(serviceType: typeof(ISmartHubProvider),
-                                  implementationType: typeof(SmartHubProvider));
+            services.AddAsSingleton(serviceType: typeof(ISmartHubProvider),
+                                    implementationType: typeof(SmartHubProvider));
 
             //add generic hubProvider
             foreach (var hubType in ServerGlobal.SmartHubConcreteTypes)
             {
-                services.AddSingleton(serviceType: typeof(ISmartHubProvider<>).MakeGenericType(hubType),
-                                      implementationType: typeof(SmartHubProvider<>).MakeGenericType(hubType));
+                services.AddAsSingleton(serviceType: typeof(ISmartHubProvider<>).MakeGenericType(hubType),
+                                        implementationType: typeof(SmartHubProvider<>).MakeGenericType(hubType));
             }
 
             return services;
@@ -136,5 +137,58 @@ namespace Microsoft.Extensions.DependencyInjection
                                                                                                              m.GetParameters().Length == 1 &&
                                                                                                              m.GetParameters()[0].ParameterType == typeof(HubOptions) &&
                                                                                                              m.IsGenericMethod);
+
+        private static SmartHubLifecycleManager _LifeManager;
+        private static bool UseLifeManager = false;
+
+
+        public static IServiceCollection AddSmartSignalR(this IServiceCollection services,
+                                                         out SmartHubLifecycleManager lifecycleManager,
+                                                         Action<SmartCoreOptions> configure = default)
+        {
+            _LifeManager = new SmartHubLifecycleManager();
+            UseLifeManager = true;
+
+            var result = services.AddSmartSignalR(configure);
+            lifecycleManager = _LifeManager;
+
+            UseLifeManager = false;
+            return result;  
+        }
+
+        private static IServiceCollection AddAsSingleton(this IServiceCollection services,
+                                                         Type serviceType,
+                                                         Type implementationType)
+        {
+            services.AddSingleton(serviceType, implementationType);
+            if (UseLifeManager) _LifeManager.AddSingleton(serviceType, implementationType);
+            return services;
+        }
+
+        private static IServiceCollection AddAsSingleton(this IServiceCollection services,
+                                                         Type serviceType,
+                                                         object implementationInstance)
+        {
+            services.AddSingleton(serviceType, implementationInstance);
+            if (UseLifeManager) _LifeManager.AddSingleton(serviceType, implementationInstance);
+            return services;
+        }
+
+        private static IServiceCollection AddAsScoped(this IServiceCollection services,
+                                                      Type type)
+        {
+            services.AddScoped(type, type);
+            if (UseLifeManager) _LifeManager.AddScoped(type, type);
+            return services;
+        }
+
+        private static IServiceCollection AddAsScoped(this IServiceCollection services,
+                                                      Type serviceType,
+                                                      Type implementationType)
+        {
+            services.AddScoped(serviceType, implementationType);
+            if (UseLifeManager) _LifeManager.AddScoped(serviceType, implementationType);
+            return services;
+        }
     }
 }

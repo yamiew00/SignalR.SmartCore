@@ -1,12 +1,12 @@
 ﻿using SignalR.SmartCore.Server.Filters.SmartHubFilters;
 
-namespace SignalR.SmartCore.Server.DependencyInjections.Builders
+namespace SignalR.SmartCore.Server.DependencyInjections.Builders.Options
 {
     public class SmartHubOptions
     {
         internal List<Type> FilterTypes = new List<Type>();
 
-        public void AddFilter<TFilter>() where TFilter: ISmartHubFilterBase
+        public void AddFilter<TFilter>() where TFilter : ISmartHubFilterBase
         {
             AddFilter(typeof(TFilter));
         }
